@@ -1,19 +1,15 @@
-var myGamePiece;
-var healthBar;
-var fillerImage;
 var mainGems = 1000;
 var petName = 0;
 var upcomingEvent;
-var rightSideCanvas;
-var botSideCanvas;
 var timePassed;
+var pushHunger = 0;
 
 function startCanvas() {
   fillerImage = new component(0.4*screen.width, 0.5*screen.height, "sloth.png", 0.13*screen.width, 0.105*screen.height, "image");
   rightSideCanvas = new component(0.22*screen.width, 0.8*screen.height, "#20B2AA", 0.68*screen.width, 0, "color");
   botSideCanvas = new component(0.68*screen.width, 0.1*screen.height, "#FFDAB9", 0, 0.7*screen.height, "color");
   buttonOne = new createButton(0.755*screen.width, 0.1*screen.height, "alert(timePassed);");
-  buttonTwo = new createButton(0.755*screen.width, 0.2*screen.height, "alert(document.cookie);");
+  buttonTwo = new createButton(0.755*screen.width, 0.2*screen.height, "pushHunger = 10");
   buttonThree = new createButton(0.755*screen.width, 0.3*screen.height, "$('.mainCanvas').hide();");
   // Currently, the hungerBar reduces to zero in a minute.
   hungerBar = new component(0.177*screen.width, 0.04*screen.height, "#F7B267", 0.7*screen.width, 0.5*screen.height, "scoreBar", (20 / (60 * 1000)) * 0.177*screen.width);
@@ -87,6 +83,13 @@ function component(width, height, color, x, y, type, rate=0) {
       // In order to decrease the entire thing in a second, let the rate be
       // 20/1000 of the total width (as 1000ms = 1 second).
       ctx.fillStyle = color;
+      if (pushHunger > 0 && this.width > scoreWidth) {
+        scoreWidth = scoreWidth + pushHunger;
+        pushHunger = 0;
+      }
+      else {
+        pushHunger = 0;
+      }
       if (scoreWidth > 0) {
         scoreWidth = scoreWidth - this.rate;
       }
