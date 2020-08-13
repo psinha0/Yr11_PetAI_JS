@@ -3,14 +3,15 @@ var petName = 0;
 var upcomingEvent;
 var timePassed;
 var pushHunger = 0;
+var mainImageVisibility = true;
 
 function startCanvas() {
-  fillerImage = new component(0.4*screen.width, 0.5*screen.height, "sloth.png", 0.13*screen.width, 0.105*screen.height, "image");
+  fillerImage = new component(0.4*screen.width, 0.5*screen.height, "sloth.png", 0.13*screen.width, 0.105*screen.height, "image", 0, "mainImageVisibility");
   rightSideCanvas = new component(0.22*screen.width, 0.8*screen.height, "#20B2AA", 0.68*screen.width, 0, "color");
   botSideCanvas = new component(0.68*screen.width, 0.1*screen.height, "#FFDAB9", 0, 0.7*screen.height, "color");
-  buttonOne = new createButton(0.755*screen.width, 0.1*screen.height, "alert(timePassed);");
-  buttonTwo = new createButton(0.755*screen.width, 0.2*screen.height, "pushHunger = 10");
-  buttonThree = new createButton(0.755*screen.width, 0.3*screen.height, "$('.mainCanvas').hide();");
+  buttonOne = new createButton(0.755*screen.width, 0.1*screen.height, "console.log(mainImageVisibility);");
+  buttonTwo = new createButton(0.755*screen.width, 0.2*screen.height, "pushHunger = 10;");
+  buttonThree = new createButton(0.755*screen.width, 0.3*screen.height, "mainImageVisibility = false;");
   // Currently, the hungerBar reduces to zero in a minute.
   hungerBar = new component(0.177*screen.width, 0.04*screen.height, "#F7B267", 0.7*screen.width, 0.5*screen.height, "scoreBar", (20 / (60 * 1000)) * 0.177*screen.width);
   // Credits to Benjamin "Sean's Schlong's Long" Avery and Sean "Stopwatch" Hou
@@ -51,11 +52,10 @@ function createButton(x, y, output) {
   }, false);
 }
 
-function component(width, height, color, x, y, type, rate=0) {
+function component(width, height, color, x, y, type, rate=0, visibility=true) {
   this.type = type;
   if (type == "image" || type == "background") {
     this.image = new Image();
-    this.image.src = color;
   }
   this.width = width;
   var scoreWidth = width;
@@ -63,26 +63,26 @@ function component(width, height, color, x, y, type, rate=0) {
   this.x = x;
   this.y = y;
   this.rate = rate;
+  this.visibility = visibility;
   this.update = function() {
     ctx = myCanvasArea.context;
     // ctx.fillText(updateEmotion(personality), x, y);
     if (type == "image" || type == "background") {
+        if (eval(this.visibility) == true) {
+          this.image.src = color;
+        }
+        else {
+          this.image.src = "";
+        }
         ctx.drawImage(this.image,
         this.x,
         this.y,
         this.width, this.height);
-    if (type == "background") {
-      ctx.drawImage(this.image,
-        this.x + this.width,
-        this.y,
-        this.width, this.height);
-      }
     }
     else if (type == "scoreBar") {
       // Rate decreases a given rate variable from the width every 20ms.
       // In order to decrease the entire thing in a second, let the rate be
       // 20/1000 of the total width (as 1000ms = 1 second).
-      ctx.fillStyle = color;
       if (pushHunger > 0 && this.width > scoreWidth) {
         scoreWidth = scoreWidth + pushHunger;
         pushHunger = 0;
@@ -93,6 +93,9 @@ function component(width, height, color, x, y, type, rate=0) {
       if (scoreWidth > 0) {
         scoreWidth = scoreWidth - this.rate;
       }
+      ctx.fillStyle = "#3B444B";
+      ctx.fillRect(this.x, this.y, this.width + 10, this.height);
+      ctx.fillStyle = color;
       ctx.fillRect(this.x, this.y, scoreWidth, this.height);
     }
     else {
@@ -170,14 +173,16 @@ function eraseCookie(name) {
 $( document ).ready(function(event) {
   var currentDate = new Date().getTime();
   var previousDate = readCookie("lastSeen");
-  timePassed = Math.floor((currentDate-previousDate / (1000 * 60 * 60)) % 24);
+  // timePassed = ((currentDate-previousDate) / (1000 * 60 * 60)).toFixed(1);
+  timePassed = ((currentDate-previousDate) / (1000)).toFixed(1);
+  alert("You have been gone " + timePassed + " seconds!")
 });
 
 window.addEventListener('beforeunload', function (event) {
   var currentDate = new Date().getTime();
   console.log(currentDate);
   eraseCookie("lastSeen");
-  createCookie("lastSeen", currentDate, 9999);
+  createCookie("lastSeen", currentDate, 365);
 });
 
 function updateGameArea() {
