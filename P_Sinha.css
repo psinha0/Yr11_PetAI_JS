@@ -14,11 +14,21 @@ body {
   background-color: #f27059;
 }
 
-#buttonCanvas {
+.menuButton {
   padding: 0;
   margin: 0;
   position: absolute;
   display: block;
   background-color: #4B0082;
   border: 2px groove yellow;
+}
+
+.buyButton {
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  display: block;
+  background-color: #87ceeb;
+  border: 2px groove orange;
+  visibility: hidden;
 }
