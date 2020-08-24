@@ -7,6 +7,8 @@ var pushHunger = 0;
 var mainImageVisibility = true;
 var listOfFoods = false;
 var menuBackground = false;
+var goldPoints = 0;
+var currentMenu = "home";
 
 function startCanvas() {
   fillerImage = new component(0.4*screen.width, 0.5*screen.height, "sloth.png", 0.13*screen.width, 0.105*screen.height, "image", 0, "mainImageVisibility");
@@ -21,19 +23,19 @@ function startCanvas() {
   petFoodFive = new component(0.08*screen.width, 0.13*screen.height, "premium_food.jpg", 0.30*screen.width, 0.37*screen.height, "image", 0, "listOfFoods");
   petFoodSix = new component(0.08*screen.width, 0.12*screen.height, "catnip.png", 0.45*screen.width, 0.38*screen.height, "image", 0, "listOfFoods");
 
-  foodOneBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.31*screen.height, "purchaseFood(1);", "buyButton", "buyButton");
-  foodTwoBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.31*screen.height, "purchaseFood(2);", "buyButton", "buyButton");
-  foodThreeBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.5*screen.width, 0.31*screen.height, "purchaseFood(3);", "buyButton", "buyButton");
-  foodFourBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.56*screen.height, "purchaseFood(4);", "buyButton", "buyButton");
-  foodFiveBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.56*screen.height, "purchaseFood(5);", "buyButton", "buyButton");
-  foodFiveBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.5*screen.width, 0.56*screen.height, "purchaseFood(6);", "buyButton", "buyButton");
+  foodOneBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.31*screen.height, "purchaseFood(1);", "buyButton", "buyButton", "Cost: 5 Gold", "15px Optima", "#708090");
+  foodTwoBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.31*screen.height, "purchaseFood(2);", "buyButton", "buyButton", "Cost: 10 Gold", "15px Optima", "#708090");
+  foodThreeBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.5*screen.width, 0.31*screen.height, "purchaseFood(3);", "buyButton", "buyButton", "Cost: 15 Gold", "15px Optima", "#708090");
+  foodFourBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.56*screen.height, "purchaseFood(4);", "buyButton", "buyButton", "Cost: 25 Gold", "15px Optima", "#708090");
+  foodFiveBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.56*screen.height, "purchaseFood(5);", "buyButton", "buyButton", "Cost: 50 Gold", "15px Optima", "#708090");
+  foodSixBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.5*screen.width, 0.56*screen.height, "purchaseFood(6);", "buyButton", "buyButton", "Cost: 100 Gold", "15px Optima", "#708090");
 
-  foodOneFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.31*screen.height, "", "petFoodOne", "useButton");
-  foodTwoFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.31*screen.height, "", "petFoodTwo", "useButton");
-  foodThreeFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.5*screen.width, 0.31*screen.height, "", "petFoodThree", "useButton");
-  foodFourFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.56*screen.height, "", "petFoodFour", "useButton");
-  foodFiveFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.56*screen.height, "", "petFoodFive", "useButton");
-  foodFiveFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.5*screen.width, 0.56*screen.height, "", "petFoodSix", "useButton");
+  foodOneFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.31*screen.height, "if (petFoods.petFoodOne >= 1) { pushHunger = 2; petFoods.petFoodOne -= 1; updateInventoryComponents(); }", "petFoodOne", "useButton", "", "15px Optima", "#D3D3D3");
+  foodTwoFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.31*screen.height, "if (petFoods.petFoodTwo >= 1) { pushHunger = 5; petFoods.petFoodTwo -= 1; updateInventoryComponents(); }", "petFoodTwo", "useButton", "", "15px Optima", "#D3D3D3");
+  foodThreeFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.5*screen.width, 0.31*screen.height, "if (petFoods.petFoodThree >= 1) { pushHunger = 8; petFoods.petFoodThree -= 1; updateInventoryComponents(); }", "petFoodThree", "useButton", "", "15px Optima", "#D3D3D3");
+  foodFourFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.56*screen.height, "if (petFoods.petFoodFour >= 1) { pushHunger = 12; petFoods.petFoodFour -= 1; updateInventoryComponents(); }", "petFoodFour", "useButton", "", "15px Optima", "#D3D3D3");
+  foodFiveFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.56*screen.height, "if (petFoods.petFoodFive >= 1) { pushHunger = 20; petFoods.petFoodFive -= 1; updateInventoryComponents(); }", "petFoodFive", "useButton", "", "15px Optima", "#D3D3D3");
+  foodSixFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.5*screen.width, 0.56*screen.height, "if (petFoods.petFoodSix >= 1) { pushHunger = 30; petFoods.petFoodSix -= 1; updateInventoryComponents(); }", "petFoodSix", "useButton", "", "15px Optima", "#D3D3D3");
 
   shopNextPage = new createButton(0.07*screen.width, 0.09*screen.height, 0.615*screen.width, 0.64*screen.height, "nextShop();", "nextShop", "shopPage");
   shopBackPage = new createButton(0.07*screen.width, 0.09*screen.height, 0.13*screen.width, 0.64*screen.height, "backShop();", "backShop", "shopPage");
@@ -41,10 +43,15 @@ function startCanvas() {
   rightSideCanvas = new component(0.22*screen.width, 0.8*screen.height, "#20B2AA", 0.68*screen.width, 0, "color");
   botSideCanvas = new component(0.68*screen.width, 0.1*screen.height, "#FFDAB9", 0, 0.7*screen.height, "color");
 
-  buttonOne = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.1*screen.height, "createInventoryComponents();", "buttonOne", "menuButton");
-  buttonTwo = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.2*screen.height, "pushHunger = 10;", "buttonTwo", "menuButton");
-  buttonThree = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.3*screen.height, "openShop();", "buttonThree", "menuButton");
-  buttonFour = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.4*screen.height, "openInventory();", "buttonFour", "menuButton");
+  buttonOne = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.1*screen.height, "console.log(petFoods['petFoodOne']);", "buttonOne", "menuButton", "");
+  buttonTwo = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.2*screen.height, "openCookie();", "buttonTwo", "menuButton", "Gold Cookie");
+  buttonThree = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.3*screen.height, "openShop();", "buttonThree", "menuButton", "Shop");
+  buttonFour = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.4*screen.height, "openInventory();", "buttonFour", "menuButton", "Inventory");
+
+  infoButton = new createButton(0.07*screen.width, 0.09*screen.height, 0.689*screen.width, 0.7*screen.height, "openInfo();", "infoButton", "infoButton");
+
+  cookieClicker = new createButton(0.3*screen.width, 0.3*screen.height, 0.24*screen.width, 0.25*screen.height, "addGold();", "cookieClicker", "cookieClicker");
+
   // Currently, the hungerBar reduces to zero in a minute.
   hungerBar = new component(0.177*screen.width, 0.04*screen.height, "#F7B267", 0.7*screen.width, 0.5*screen.height, "scoreBar", (20 / (60 * 60 * 1000)) * 0.177*screen.width);
   // Credits to Benjamin "Sean's Schlong's Long" Avery and Sean "Stopwatch" Hou
@@ -70,23 +77,50 @@ var myCanvasArea = {
   }
 }
 
-function createButton(width, height, x, y, output, id, buttonClass) {
+function returnOwnedFoodAmount(id, givenID, text) {
+  if (id == givenID) {
+    return "Owned: " + petFoods[givenID];
+  }
+  else {
+    return text;
+  }
+}
+
+function createButton(width, height, x, y, output, id, buttonClass, text="", style="20px Comic Sans MS", textColor="#FFD1C1") {
   this.buttonCanvas = document.createElement("canvas");
   this.buttonCanvas.width = width;
   this.buttonCanvas.height = height;
   this.buttonCanvas.id = id;
+  this.text = text;
+  this.context = this.buttonCanvas.getContext("2d");
+  this.interval = setInterval(updateButton, 100);
   this.buttonCanvas.classList.add(buttonClass);
   // The code above assigns the width, height, id and class
-  this.context = this.buttonCanvas.getContext("2d");
   document.body.insertBefore(this.buttonCanvas, document.body.childNodes[0]);
   // ^ Appends the <canvas> tag below the <body> tag in html ^
   var buttonStyling = document.getElementById(id);
-  buttonStyling.style.left = x + "px";
-  buttonStyling.style.top = y + "px";
+
+  this.updateButton = function() {
+    this.context.clearRect(0, 0, this.buttonCanvas.width, this.buttonCanvas.height);
+    var feedButtons = ['petFoodOne', 'petFoodTwo', 'petFoodThree', 'petFoodFour', 'petFoodFive', 'petFoodSix'];
+    for (const item of feedButtons) {
+      this.text = returnOwnedFoodAmount(id, item, text);
+      canvasFont(this.context, style, textColor, this.text, width/2, height/2+3);
+    }
+    buttonStyling.style.left = x + "px";
+    buttonStyling.style.top = y + "px";
+  }
   // The code below adds an event which runs upon clicking the canvas
   this.buttonCanvas.addEventListener('click', function(event) {
     eval(output); // Runs the output code
   }, false);
+}
+
+function updateButton() {
+  var myComponents = [shopClose, buttonOne, buttonTwo, buttonThree, buttonFour, foodOneBuy, foodTwoBuy, foodThreeBuy, foodFourBuy, foodFiveBuy, foodSixBuy, foodOneFeed, foodTwoFeed, foodThreeFeed, foodFourFeed, foodFiveFeed, foodSixFeed, shopNextPage, shopBackPage, infoButton, cookieClicker];
+  for (const item of myComponents) {
+    item.updateButton();
+  }
 }
 
 function component(width, height, color, x, y, type, rate=0, visibility=true) {
@@ -147,17 +181,16 @@ function component(width, height, color, x, y, type, rate=0, visibility=true) {
         ctx.fillStyle = color;
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
-    canvasFont(ctx, "30px Palatine Linotype", "red");
-    ctx.fillText(reactions.love, 0.34*screen.width, 0.77*screen.height);
-    canvasFont(ctx, "25px Palatine Linotype", "gold");
-    ctx.fillText("Your Gold: " + gold, 0.79*screen.width, 0.48*screen.height);
+    canvasFont(ctx, "30px Palatine Linotype", "red", reactions.love, 0.34*screen.width, 0.77*screen.height);
+    canvasFont(ctx, "25px Palatine Linotype", "gold", "Your Gold: " + gold, 0.79*screen.width, 0.48*screen.height);
   }
 }
 
-function canvasFont(ctx, style, color) {
+function canvasFont(ctx, style, color, text, width, height) {
   ctx.font = style;
   ctx.fillStyle = color;
   ctx.textAlign = "center";
+  ctx.fillText(text, width, height)
 }
 
 function askPetName() {
@@ -238,10 +271,20 @@ function purchaseFood(foodNumber) {
   }
 }
 
+function addGold() {
+  goldPoints += 0.2;
+  if (goldPoints == 1) {
+    gold += 1;
+    goldPoints = 0;
+  }
+}
+
 function openShop() {
+  closeAll();
   mainImageVisibility = false;
   listOfFoods = true;
   menuBackground = true;
+  currentMenu = "shop";
   var buyButton = document.getElementsByClassName('buyButton');
   var shopPage = document.getElementsByClassName('shopPage');
   for (var i = 0; i < buyButton.length; i++) {
@@ -255,35 +298,76 @@ function openShop() {
 
 function updateInventoryComponents() {
   var availableFoods = [];
+  var unavailableFoods = [];
   var petFoodTypes = Object.keys(petFoods);
   for (var i = 0; i < petFoodTypes.length; i++) {
-    console.log(petFoods[petFoodTypes[i]]);
     if (petFoods[petFoodTypes[i]] >= 1) {
       availableFoods.push(petFoodTypes[i]);
+    }
+    else {
+      unavailableFoods.push(petFoodTypes[i]);
     }
   }
   for (var i = 0; i < availableFoods.length; i++) {
     var usableButton = document.getElementById(availableFoods[i]);
     usableButton.style.backgroundColor = "#228B22";
   }
+  for (var i = 0; i < unavailableFoods.length; i++) {
+    var unusableButton = document.getElementById(unavailableFoods[i]);
+    unusableButton.style.backgroundColor = "#D3D3D3";
+  }
+}
+
+function openInfo() {
+  switch (currentMenu) {
+    case ("home"):
+      alertify.alert('Home Information', 'This is your main pet menu. You can stare at your pet as they live!');
+      break;
+    case ("shop"):
+      alertify.alert('Shop Information', 'This is the shop! You can browse the items available here. You can purchase items with gold.');
+      break;
+    case("bag"):
+      alertify.alert('Inventory Information', 'This is your inventory. You can look at the items you have. You can also feed your pet here.');
+      break;
+    case("cookie"):
+      alertify.alert('Getting Gold Information', 'You can click on the cookie to get gold. 5 CLICKS = 1 GOLD.');
+      break;
+    default:
+      alertify.alert('you fucking donkey', 'you fucking retard.');
+      break;
+  }
+}
+
+function openCookie() {
+  closeAll();
+  mainImageVisibility = false;
+  menuBackground = true;
+  listOfFoods = false;
+  currentMenu = "cookie";
+  document.getElementById('cookieClicker').style.visibility = 'visible';
+  document.getElementById('shopClose').style.visibility = 'visible';
 }
 
 function openInventory() {
+  closeAll();
   mainImageVisibility = false;
   menuBackground = true;
   listOfFoods = true;
+  currentMenu = "bag";
   updateInventoryComponents();
   var useButton = document.getElementsByClassName('useButton');
   for (var i = 0; i < useButton.length; i++) {
     useButton[i].style.visibility = 'visible';
   }
   document.getElementById('shopClose').style.visibility = 'visible';
+  document.getElementById('infoButton').style.visibility = 'visible';
 }
 
 function closeAll() {
   mainImageVisibility = true;
   listOfFoods = false;
   menuBackground = false;
+  currentMenu = "home";
   var buyButton = document.getElementsByClassName('buyButton');
   var shopPage = document.getElementsByClassName('shopPage');
   var useButton = document.getElementsByClassName('useButton');
@@ -297,6 +381,7 @@ function closeAll() {
     useButton[i].style.visibility = 'hidden';
   }
   document.getElementById('shopClose').style.visibility = 'hidden';
+  document.getElementById('cookieClicker').style.visibility = 'hidden';
 }
 
 // Credits to Mandeep Janjua for setCookie, getCookie and eraseCookie

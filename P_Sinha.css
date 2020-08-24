@@ -33,6 +33,28 @@ body {
   background-image: url("images/leftarrow.png");
 }
 
+#infoButton {
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  display: block;
+  background-image: url("images/info_button.png");
+  background-size: 50% 50%;
+  background-repeat: no-repeat;
+}
+
+.cookieClicker {
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  display: block;
+  background-image: url("images/cookie.jpg");
+  border: 2px groove #A52A2A;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  visibility: hidden;
+}
+
 .shopPage {
   padding: 0;
   margin: 0;
