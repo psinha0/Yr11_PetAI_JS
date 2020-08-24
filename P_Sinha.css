@@ -14,6 +14,17 @@ body {
   background-color: #f27059;
 }
 
+#shopClose {
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  display: block;
+  background-image: url("images/backbutton.png");
+  background-size: 50% 50%;
+  background-repeat: no-repeat;
+  visibility: hidden;
+}
+
 .menuButton {
   padding: 0;
   margin: 0;

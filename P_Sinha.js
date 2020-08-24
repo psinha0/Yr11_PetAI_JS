@@ -1,5 +1,6 @@
 var mainGems = 1000;
-var petName = 0;
+var petName;
+var reactions = {};
 var upcomingEvent;
 var timePassed;
 var pushHunger = 0;
@@ -9,23 +10,32 @@ var foodShopMenu = false;
 function startCanvas() {
   fillerImage = new component(0.4*screen.width, 0.5*screen.height, "sloth.png", 0.13*screen.width, 0.105*screen.height, "image", 0, "mainImageVisibility");
 
-  catFoodOne = new component(0.07*screen.width, 0.10*screen.height, "cat_food.jpg", 0.08*screen.width, 0.1*screen.height, "image", 0, "foodShopMenu");
-  catFoodTwo = new component(0.07*screen.width, 0.10*screen.height, "cat_food.jpg", 0.19*screen.width, 0.1*screen.height, "image", 0, "foodShopMenu");
-  catFoodThree = new component(0.07*screen.width, 0.10*screen.height, "cat_food.jpg", 0.30*screen.width, 0.1*screen.height, "image", 0, "foodShopMenu");
-  catFoodFour = new component(0.07*screen.width, 0.10*screen.height, "cat_food.jpg", 0.41*screen.width, 0.1*screen.height, "image", 0, "foodShopMenu");
-  catFoodFive = new component(0.07*screen.width, 0.10*screen.height, "cat_food.jpg", 0.52*screen.width, 0.1*screen.height, "image", 0, "foodShopMenu");
+  shopCanvas = new component(0.55*screen.width, 0.55*screen.height, "#FBFCFC", 0.065*screen.width, 0.08*screen.height, "backgroundColor", 0, "foodShopMenu");
+  shopClose = new createButton(0.07*screen.width, 0.09*screen.height, 0.13*screen.width, 0.15*screen.height, "closeShop();", "shopClose");
 
-  foodOneBuy = new createButton(0.07*screen.width, 0.03*screen.height, 0.13*screen.width, 0.25*screen.height, "catFoods.catFoodOne += 1;", "buyButtonOne", "buyButton");
+  catFoodOne = new component(0.08*screen.width, 0.11*screen.height, "orange.png", 0.15*screen.width, 0.14*screen.height, "image", 0, "foodShopMenu");
+  catFoodTwo = new component(0.08*screen.width, 0.11*screen.height, "cat_food.jpg", 0.30*screen.width, 0.14*screen.height, "image", 0, "foodShopMenu");
+  catFoodThree = new component(0.08*screen.width, 0.13*screen.height, "meat.png", 0.45*screen.width, 0.12*screen.height, "image", 0, "foodShopMenu");
+  catFoodFour = new component(0.08*screen.width, 0.14*screen.height, "fish_food.jpg", 0.155*screen.width, 0.36*screen.height, "image", 0, "foodShopMenu");
+  catFoodFive = new component(0.08*screen.width, 0.13*screen.height, "premium_food.jpg", 0.30*screen.width, 0.37*screen.height, "image", 0, "foodShopMenu");
+  catFoodSix = new component(0.08*screen.width, 0.12*screen.height, "catnip.png", 0.45*screen.width, 0.38*screen.height, "image", 0, "foodShopMenu");
+
+  foodOneBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.31*screen.height, "catFoods.catFoodOne += 1;", "buyButton", "buyButton");
+  foodTwoBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.31*screen.height, "catFoods.catFoodTwo += 1;", "buyButton", "buyButton");
+  foodThreeBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.5*screen.width, 0.31*screen.height, "catFoods.catFoodThree += 1;", "buyButton", "buyButton");
+  foodFourBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.56*screen.height, "catFoods.catFoodFour += 1;", "buyButton", "buyButton");
+  foodFiveBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.56*screen.height, "catFoods.catFoodFive += 1;", "buyButton", "buyButton");
+  foodFiveBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.5*screen.width, 0.56*screen.height, "catFoods.catFoodSix += 1;", "buyButton", "buyButton");
 
   rightSideCanvas = new component(0.22*screen.width, 0.8*screen.height, "#20B2AA", 0.68*screen.width, 0, "color");
   botSideCanvas = new component(0.68*screen.width, 0.1*screen.height, "#FFDAB9", 0, 0.7*screen.height, "color");
 
-  buttonOne = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.1*screen.height, "alertify.alert('hi')", "buttonOne", "menuButton");
+  buttonOne = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.1*screen.height, "alert(petName);", "buttonOne", "menuButton");
   buttonTwo = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.2*screen.height, "pushHunger = 10;", "buttonTwo", "menuButton");
   buttonThree = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.3*screen.height, "openShop();", "buttonThree", "menuButton");
-  buttonFour = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.4*screen.height, "alert(catFoods.catFoodOne);", "buttonFour", "menuButton");
+  buttonFour = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.4*screen.height, "alert('are you kasym?');", "buttonFour", "menuButton");
   // Currently, the hungerBar reduces to zero in a minute.
-  hungerBar = new component(0.177*screen.width, 0.04*screen.height, "#F7B267", 0.7*screen.width, 0.5*screen.height, "scoreBar", (20 / (60 * 1000)) * 0.177*screen.width);
+  hungerBar = new component(0.177*screen.width, 0.04*screen.height, "#F7B267", 0.7*screen.width, 0.5*screen.height, "scoreBar", (20 / (60 * 60 * 1000)) * 0.177*screen.width);
   // Credits to Benjamin "Sean's Schlong's Long" Avery and Sean "Stopwatch" Hou
   myCanvasArea.start();
 }
@@ -70,7 +80,7 @@ function createButton(width, height, x, y, output, id, buttonClass) {
 
 function component(width, height, color, x, y, type, rate=0, visibility=true) {
   this.type = type;
-  if (type == "image" || type == "background") {
+  if (type == "image") {
     this.image = new Image();
   }
   this.width = width;
@@ -83,7 +93,7 @@ function component(width, height, color, x, y, type, rate=0, visibility=true) {
   this.update = function() {
     ctx = myCanvasArea.context;
     // ctx.fillText(updateEmotion(personality), x, y);
-    if (type == "image" || type == "background") {
+    if (type == "image") {
         if (eval(this.visibility) == true) {
           this.image.src = "images/" + color;
         }
@@ -114,6 +124,14 @@ function component(width, height, color, x, y, type, rate=0, visibility=true) {
       ctx.fillStyle = color;
       ctx.fillRect(this.x, this.y, scoreWidth, this.height);
     }
+    else if (type == "backgroundColor") {
+      if (eval(this.visibility) == true) {
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.8;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+        ctx.globalAlpha = 1;
+      }
+    }
     else {
         ctx.fillStyle = color;
         ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -121,8 +139,15 @@ function component(width, height, color, x, y, type, rate=0, visibility=true) {
     ctx.font = "30px Palatino Linotype";
     ctx.fillStyle = "red";
     ctx.textAlign = "center";
+    petName = readCookie("petName");
     ctx.fillText(reactions.love, 0.34*screen.width, 0.77*screen.height);
   }
+}
+
+function askPetName() {
+  alertify.prompt( "What's your pet's name?", 'Enter Pet Name:', 'Pet'
+               , function(evt, value) { createCookie("petName", value, 999); petName = readCookie("petName"); refreshReactions(); }
+               , function() { alert("you will never see this, this is an easter egg !!") });
 }
 
 var emotions = {
@@ -136,20 +161,6 @@ var emotions = {
       return this.loneliness;
     }
   }
-}
-
-var reactions = {
-  hungry: petName + " is starving and needs to be fed immediately.",
-  // Ben helped me with hungry reaction. Credits to Benjamin David Avery [24/07/2020].
-  sad: petName + " is depressed for unknown reasons.",
-  //lowhealthReaction: petName + " has very low health! Take it to a Pokecenter right now!",
-  angry: petName + " is angry at you for unknown reasons.",
-  dislike: petName + " doesn't seem to be fond of you.",
-  indifferent: petName + " seems indifferent about you.",
-  happy: petName + " feels happy!",
-  excited: petName + " seems extremely excited about " + upcomingEvent,
-  cheerful: petName + " assures you that they are here for you!",
-  love: petName + " seems to seriously adore you!"
 }
 
 function updateEmotion(personality) {
@@ -174,6 +185,17 @@ function openShop() {
   for (var i = 0; i < buyButton.length; i++) {
     buyButton[i].style.visibility = 'visible';
   }
+  document.getElementById('shopClose').style.visibility = 'visible';
+}
+
+function closeShop() {
+  mainImageVisibility = true;
+  foodShopMenu = false;
+  var buyButton = document.getElementsByClassName('buyButton');
+  for (var i = 0; i < buyButton.length; i++) {
+    buyButton[i].style.visibility = 'hidden';
+  }
+  document.getElementById('shopClose').style.visibility = 'hidden';
 }
 
 // Credits to Mandeep Janjua for setCookie, getCookie and eraseCookie
@@ -206,21 +228,36 @@ function eraseCookie(name) {
 $( document ).ready(function(event) {
   var currentDate = new Date().getTime();
   var previousDate = readCookie("lastSeen");
-  // timePassed = ((currentDate-previousDate) / (1000 * 60 * 60)).toFixed(1);
-  timePassed = ((currentDate-previousDate) / (1000)).toFixed(1);
-  // alert("You have been gone " + timePassed + " seconds!")
+  timePassed = ((currentDate-previousDate) / (1000 * 60 * 60)).toFixed(1);
+  if (readCookie("petName") == null) { askPetName(); }
+  petName = readCookie("petName");
+  refreshReactions();
+  // timePassed = ((currentDate-previousDate) / (1000)).toFixed(1);
+  // alert("You have been gone " + timePassed + " hours!")
 });
+
+function refreshReactions() {
+  reactions["hungry"] = petName + " is starving and needs to be fed immediately.";
+  reactions["sad"] = petName + " is depressed for unknown reasons.";
+  //lowhealthReaction: petName + " has very low health! Take it to a Pokecenter right now!",
+  reactions["angry"] = petName + " is angry at you for unknown reasons.";
+  reactions["dislike"] = petName + " doesn't seem to be fond of you.";
+  reactions["indifferent"] = petName + " seems indifferent about you.";
+  reactions["happy"] = petName + " feels happy!";
+  reactions["excited"] = petName + " seems extremely excited about " + upcomingEvent;
+  reactions["cheerful"] = petName + " assures you that they are here for you!";
+  reactions["love"] = petName + " seems to seriously adore you!";
+}
 
 window.addEventListener('beforeunload', function (event) {
   var currentDate = new Date().getTime();
   console.log(currentDate);
-  eraseCookie("lastSeen");
   createCookie("lastSeen", currentDate, 365);
 });
 
 function updateGameArea() {
   myCanvasArea.clear();
-  var myComponents = [fillerImage, rightSideCanvas, botSideCanvas, hungerBar, catFoodOne, catFoodTwo, catFoodThree, catFoodFour, catFoodFive];
+  var myComponents = [fillerImage, shopCanvas, rightSideCanvas, botSideCanvas, hungerBar, catFoodOne, catFoodTwo, catFoodThree, catFoodFour, catFoodFive, catFoodSix];
   for (const item of myComponents) {
     item.update();
   }
