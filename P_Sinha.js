@@ -12,18 +12,20 @@ var gold = 100;
 var reactions = {};
 var upcomingEvent;
 var timePassed;
-var playPoints = 0;
+var playValues = readCookie("playPoints");
 var scorePercent;
 var currentShop = "";
 var currentBag = "";
+var loadHunger = false;
 var pushHunger = 0;
 var mainImageVisibility = true;
 var listOfFoods = false;
 var listOfToys = false;
 var menuBackground = false;
 var goldPoints = 0;
+var currentReaction = reactions.indifferent;
 var currentMenu = "home";
-TimeMe.initialize({ currentPageName: "main_page", idleTimeoutInSeconds: -1 });
+TimeMe.initialize({ currentPageName: "main_page", idleTimeoutInSeconds: 300 });
 
 // The following code are hard defined. They have a definite (x, y) coordinate, as well as a (width, height).
 
@@ -77,13 +79,13 @@ function startCanvas() {
   cookieClicker = new createButton(0.3*screen.width, 0.3*screen.height, 0.24*screen.width, 0.25*screen.height, "addGold();", "cookieClicker", "cookieClicker");
 
   // Currently, the hungerBar reduces to zero in a minute.
-  hungerBar = new component(0.177*screen.width, 0.04*screen.height, "#F7B267", 0.7*screen.width, 0.5*screen.height, "scoreBar", (20 / (60 * 60 * 1000)) * 0.177*screen.width);
+  hungerBar = new component(0.177*screen.width, 0.04*screen.height, "#F7B267", 0.7*screen.width, 0.5*screen.height, "scoreBar", (20 / (2 * 60 * 60 * 1000)) * 0.177*screen.width);
   // Credits to Benjamin "Sean's Schlong's Long" Avery and Sean "Stopwatch" Hou
   myCanvasArea.start();
 }
 
 function alertUsedToy(text, play_increase) {
-  alertify.alert('You played with ' + petName + "!", text, playPoints += play_increase);
+  alertify.alert('You played with ' + petName + "!", text, playValues += play_increase);
 }
 
 function useItem(item) {
@@ -114,7 +116,7 @@ function useItem(item) {
       break;
     case 4:
       if (currentBag == "food") {
-        if (petFoods.petItemFour >= 1) { pushHunger = 10; petFoods.petItemFour -= 1; updateInventoryComponents(petFoods); }
+        if (petFoods.petItemFour >= 1) { pushHunger = 7; petFoods.petItemFour -= 1; updateInventoryComponents(petFoods); }
       }
       else if (currentBag == "toy") {
         if (petToys.petItemFour >= 1) { alertUsedToy("Your pet played with a toy train! " + petName + " really enjoyed doing that!", 30); petToys.petItemFour -= 1; updateInventoryComponents(petToys); }
@@ -122,7 +124,7 @@ function useItem(item) {
       break;
     case 5:
       if (currentBag == "food") {
-        if (petFoods.petItemFive >= 1) { pushHunger = 20; petFoods.petItemFive -= 1; updateInventoryComponents(petFoods); }
+        if (petFoods.petItemFive >= 1) { pushHunger = 10; petFoods.petItemFive -= 1; updateInventoryComponents(petFoods); }
       }
       else if (currentBag == "toy") {
         if (petToys.petItemFive >= 1) { alertUsedToy("Your pet played with a toy train! " + petName + "had a LOT of fun!", 50); petToys.petItemFive -= 1; updateInventoryComponents(petToys); }
@@ -130,7 +132,7 @@ function useItem(item) {
       break;
     case 6:
       if (currentBag == "food") {
-        if (petFoods.petItemSix >= 1) { pushHunger = 50; petFoods.petItemSix -= 1; updateInventoryComponents(petFoods); }
+        if (petFoods.petItemSix >= 1) { pushHunger = 20; petFoods.petItemSix -= 1; updateInventoryComponents(petFoods); }
       }
       else if (currentBag == "toy") {
         if (petToys.petItemSix >= 1) { alertUsedToy("Your pet played with a toy train! It's almost as if " + petName + " had a small party with itself!", 100); petToys.petItemSix -= 1; updateInventoryComponents(petToys); }
@@ -240,6 +242,7 @@ function component(width, height, color, x, y, type, rate=0, visibility=true) {
       // Rate decreases a given rate variable from the width every 20ms.
       // In order to decrease the entire thing in a second, let the rate be
       // 20/1000 of the total width (as 1000ms = 1 second).
+      if (loadHunger == true) { scoreWidth = (scorePercent / 100) * this.width; loadHunger = false; }
       if (pushHunger > 0 && this.width > scoreWidth) {
         scoreWidth = scoreWidth + pushHunger;
         pushHunger = 0;
@@ -269,7 +272,7 @@ function component(width, height, color, x, y, type, rate=0, visibility=true) {
         ctx.fillStyle = color;
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
-    canvasFont(ctx, "30px Palatine Linotype", "red", reactions.love, 0.34*screen.width, 0.77*screen.height);
+    canvasFont(ctx, "30px Palatine Linotype", "red", currentReaction, 0.34*screen.width, 0.77*screen.height);
     canvasFont(ctx, "25px Palatine Linotype", "gold", "Your Gold: " + gold, 0.79*screen.width, 0.48*screen.height);
   }
 }
@@ -405,7 +408,7 @@ function purchaseItem(itemNumber) {
   }
 }
 
-function randInteger(min, max) {
+function getRandInteger(min, max) {
   return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
 
@@ -628,7 +631,7 @@ function eraseCookie(name) {
 
 function checkHungerDifference() {
   var currentHunger = scorePercent;
-  if (previousHunger === undefined) { createCookie("previousHunger", currentHunger, 999); return 100-currentHunger; }
+  if (typeof previousHunger === 'undefined') { createCookie("previousHunger", currentHunger, 999); return 100-currentHunger; }
   else {
     hungerDifference = readCookie("previousHunger") - currentHunger;
     createCookie("previousHunger", currentHunger, 999);
@@ -636,16 +639,60 @@ function checkHungerDifference() {
   }
 }
 
+Number.prototype.between = function(a, b) {
+  var min = Math.min(a, b),
+    max = Math.max(a, b);
+  return this > min && this < max;
+};
+
 function createEmotion() {
   var timeSpentOnPage = TimeMe.getTimeOnCurrentPageInSeconds().toFixed();
-  var hungerDifference = checkHungerDifference(); // Returns a number from -120 to 120. Negative = Increase. Positive = Decrease.
-  timePassed = timePassed;
-  playPoints = playPoints;
+  if (isNaN(checkHungerDifference())) { hungerDifference = 0; }
+  else {var hungerDifference = checkHungerDifference(); } // Returns a number from -120 to 120. Negative = Increase. Positive = Decrease.}
+  var randomNum = getRandInteger(-25, 25);
+  if (timePassed <= 0) { var timeDifference = 1; }
+  else { timeDifference = timePassed; timePassed -= 0.3; }
+  var playPoints = playValues;
 
+  /*
+  The formula for the creation of emotion. Heh.
+  T = Time spent on the page (in seconds). After 5 minutes of idle activity, the timer stops counting time.
+  H = Hunger differece. This value represents the increase or decrease in hunger since last feed. This updates every 10 minutes.
+  R = Random Integer between -50 and 50.
+  K = Time passed since this simulation was last open. Basically, the difference between the last time the simulation was played
+      and the time the simulation was opened.
+  P = Play points. A direct constant representative of how much the pet has been played with.
+
+  Every five minutes, the play points will reduce by 25.
+  Every five minutes, K will reduce by twenty minutes (aka by 0.3) until it reaches zero.
+
+  Since the play points are to directly linked to user's actions, the play points will have the highest influence.
+  The time passed is in hours and is directly linked to how long the user has the left the pet the alone.
+    Therefore, the time passed will also have a high influence.
+  On average, playPoints ∈ (-25, 50)
+
+  [2P + 1.2 * Sqrt(T) + R - (H/4)] / K
+
+  */
+
+  var emotionEquation = ((2 * playPoints) + (1.2 * Math.sqrt(timeSpentOnPage)) + randomNum - (hungerDifference / 3)) / timeDifference;
+  // Average Value = 75. (Therefore base value = 75)
+  if (emotionEquation < -20) { currentReaction = reactions.angry; }
+  else if (emotionEquation.between(-20, 0)) { currentReaction = reactions.sad; }
+  else if (emotionEquation.between(0, 20)) { currentReaction = reactions.dislike; }
+  else if (emotionEquation.between(20, 40)) { currentReaction = reactions.indifferent; }
+  else if (emotionEquation.between(40, 80)) { currentReaction = reactions.happy; }
+  else if (emotionEquation.between(80, 130)) {currentReaction = reactions.cheerful; }
+  else if (emotionEquation > 130) { currentReaction = reactions.love; }
+  else { currentReaction = reactions.happy; }
+
+  playValues -= 5;
+  console.log(emotionEquation);
+  createCookie("playPoints", playValues, 999);
 }
 
 function updateEmotion() {
-  setInterval(createEmotion, 1000 * 60 * 10); // Do that every ten minutes.
+  setInterval(createEmotion, 1000 * 60); // Do that every minute.
 }
 
 $( document ).ready(function(event) {
@@ -654,8 +701,16 @@ $( document ).ready(function(event) {
   timePassed = ((currentDate-previousDate) / (1000 * 60 * 60)).toFixed(1);
   // eraseCookie('petName');
   if (readCookie("petName") == null) { askPetName(); }
+  if (readCookie("playPoints") == null) { createCookie("playPoints", 25, 999); }
   petName = readCookie("petName");
   refreshReactions();
+  createEmotion();
+  updateEmotion();
+  if (readCookie("exitHunger") !== null) {
+    scorePercent = readCookie("exitHunger") - ((timePassed / 8) / (2 * 60 * 60 * 1000));
+    loadHunger = true;
+  }
+
   // timePassed = ((currentDate-previousDate) / (1000)).toFixed(1);
   // alert("You have been gone " + timePassed + " hours!")
 });
@@ -676,6 +731,8 @@ function refreshReactions() {
 window.addEventListener('beforeunload', function (event) {
   var currentDate = new Date().getTime();
   createCookie("lastSeen", currentDate, 365);
+  createCookie("exitHunger", scorePercent, 365);
+  createCookie("playPoints", playValues, 365);
 });
 
 function updateGameArea() {
