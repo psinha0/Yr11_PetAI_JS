@@ -1,17 +1,31 @@
+/*
+
+Welcome to Prathmesh Sinha's Beautiful Pet Simulator! (Some people call it NeoPets v2 but NO, this is the OG pet simulator)
+the code is ugly, i don't like, it works, i don't know how, please leave me be
+
+The next few lines are very ugly. They are hard-defined global variables that are used throughout the code.
+The components and buttons are hard-defined coordinates of images and buttons on the screen. Fun.
+
+*/
 var petName;
 var gold = 100;
 var reactions = {};
 var upcomingEvent;
 var timePassed;
+var currentShop = "";
+var currentBag = "";
 var pushHunger = 0;
 var mainImageVisibility = true;
 var listOfFoods = false;
+var listOfToys = false;
 var menuBackground = false;
 var goldPoints = 0;
 var currentMenu = "home";
 
+// The following code are hard defined. They have a definite (x, y) coordinate, as well as a (width, height).
+
 function startCanvas() {
-  fillerImage = new component(0.4*screen.width, 0.5*screen.height, "sloth.png", 0.13*screen.width, 0.105*screen.height, "image", 0, "mainImageVisibility");
+  fillerImage = new component(0.4*screen.width, 0.5*screen.height, "duck.jpeg", 0.13*screen.width, 0.105*screen.height, "image", 0, "mainImageVisibility");
 
   shopCanvas = new component(0.55*screen.width, 0.55*screen.height, "#FBFCFC", 0.065*screen.width, 0.08*screen.height, "backgroundColor", 0, "menuBackground");
   shopClose = new createButton(0.07*screen.width, 0.09*screen.height, 0.13*screen.width, 0.15*screen.height, "closeAll();", "shopClose");
@@ -23,19 +37,26 @@ function startCanvas() {
   petFoodFive = new component(0.08*screen.width, 0.13*screen.height, "premium_food.jpg", 0.30*screen.width, 0.37*screen.height, "image", 0, "listOfFoods");
   petFoodSix = new component(0.08*screen.width, 0.12*screen.height, "catnip.png", 0.45*screen.width, 0.38*screen.height, "image", 0, "listOfFoods");
 
-  foodOneBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.31*screen.height, "purchaseFood(1);", "buyButton", "buyButton", "Cost: 5 Gold", "15px Optima", "#708090");
-  foodTwoBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.31*screen.height, "purchaseFood(2);", "buyButton", "buyButton", "Cost: 10 Gold", "15px Optima", "#708090");
-  foodThreeBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.5*screen.width, 0.31*screen.height, "purchaseFood(3);", "buyButton", "buyButton", "Cost: 15 Gold", "15px Optima", "#708090");
-  foodFourBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.56*screen.height, "purchaseFood(4);", "buyButton", "buyButton", "Cost: 25 Gold", "15px Optima", "#708090");
-  foodFiveBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.56*screen.height, "purchaseFood(5);", "buyButton", "buyButton", "Cost: 50 Gold", "15px Optima", "#708090");
-  foodSixBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.5*screen.width, 0.56*screen.height, "purchaseFood(6);", "buyButton", "buyButton", "Cost: 100 Gold", "15px Optima", "#708090");
+  petToyOne = new component(0.08*screen.width, 0.11*screen.height, "train.png", 0.15*screen.width, 0.14*screen.height, "image", 0, "listOfToys");
+  petToyTwo = new component(0.08*screen.width, 0.11*screen.height, "train.png", 0.30*screen.width, 0.14*screen.height, "image", 0, "listOfToys");
+  petToyThree = new component(0.08*screen.width, 0.13*screen.height, "train.png", 0.45*screen.width, 0.12*screen.height, "image", 0, "listOfToys");
+  petToyFour = new component(0.08*screen.width, 0.14*screen.height, "train.png", 0.155*screen.width, 0.36*screen.height, "image", 0, "listOfToys");
+  petToyFive = new component(0.08*screen.width, 0.13*screen.height, "train.png", 0.30*screen.width, 0.37*screen.height, "image", 0, "listOfToys");
+  petToySix = new component(0.08*screen.width, 0.12*screen.height, "train.png", 0.45*screen.width, 0.38*screen.height, "image", 0, "listOfToys");
 
-  foodOneFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.31*screen.height, "if (petFoods.petFoodOne >= 1) { pushHunger = 2; petFoods.petFoodOne -= 1; updateInventoryComponents(); }", "petFoodOne", "useButton", "", "15px Optima", "#D3D3D3");
-  foodTwoFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.31*screen.height, "if (petFoods.petFoodTwo >= 1) { pushHunger = 5; petFoods.petFoodTwo -= 1; updateInventoryComponents(); }", "petFoodTwo", "useButton", "", "15px Optima", "#D3D3D3");
-  foodThreeFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.5*screen.width, 0.31*screen.height, "if (petFoods.petFoodThree >= 1) { pushHunger = 8; petFoods.petFoodThree -= 1; updateInventoryComponents(); }", "petFoodThree", "useButton", "", "15px Optima", "#D3D3D3");
-  foodFourFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.56*screen.height, "if (petFoods.petFoodFour >= 1) { pushHunger = 12; petFoods.petFoodFour -= 1; updateInventoryComponents(); }", "petFoodFour", "useButton", "", "15px Optima", "#D3D3D3");
-  foodFiveFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.56*screen.height, "if (petFoods.petFoodFive >= 1) { pushHunger = 20; petFoods.petFoodFive -= 1; updateInventoryComponents(); }", "petFoodFive", "useButton", "", "15px Optima", "#D3D3D3");
-  foodSixFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.5*screen.width, 0.56*screen.height, "if (petFoods.petFoodSix >= 1) { pushHunger = 30; petFoods.petFoodSix -= 1; updateInventoryComponents(); }", "petFoodSix", "useButton", "", "15px Optima", "#D3D3D3");
+  foodOneBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.31*screen.height, "purchaseItem(1);", "buyButton", "buyButton", "Cost: 5 Gold", "15px Optima", "#708090");
+  foodTwoBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.31*screen.height, "purchaseItem(2);", "buyButton", "buyButton", "Cost: 10 Gold", "15px Optima", "#708090");
+  foodThreeBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.5*screen.width, 0.31*screen.height, "purchaseItem(3);", "buyButton", "buyButton", "Cost: 15 Gold", "15px Optima", "#708090");
+  foodFourBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.56*screen.height, "purchaseItem(4);", "buyButton", "buyButton", "Cost: 25 Gold", "15px Optima", "#708090");
+  foodFiveBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.56*screen.height, "purchaseItem(5);", "buyButton", "buyButton", "Cost: 50 Gold", "15px Optima", "#708090");
+  foodSixBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.5*screen.width, 0.56*screen.height, "purchaseItem(6);", "buyButton", "buyButton", "Cost: 100 Gold", "15px Optima", "#708090");
+
+  foodOneFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.31*screen.height, "useItem(1);", "petItemOne", "useButton", "", "15px Optima", "#D3D3D3");
+  foodTwoFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.31*screen.height, "useItem(2);", "petItemTwo", "useButton", "", "15px Optima", "#D3D3D3");
+  foodThreeFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.5*screen.width, 0.31*screen.height, "useItem(3);", "petItemThree", "useButton", "", "15px Optima", "#D3D3D3");
+  foodFourFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.56*screen.height, "useItem(4);", "petItemFour", "useButton", "", "15px Optima", "#D3D3D3");
+  foodFiveFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.56*screen.height, "useItem(5);", "petItemFive", "useButton", "", "15px Optima", "#D3D3D3");
+  foodSixFeed = new createButton(0.08*screen.width, 0.035*screen.height, 0.5*screen.width, 0.56*screen.height, "useItem(6);", "petItemSix", "useButton", "", "15px Optima", "#D3D3D3");
 
   shopNextPage = new createButton(0.07*screen.width, 0.09*screen.height, 0.615*screen.width, 0.64*screen.height, "nextShop();", "nextShop", "shopPage");
   shopBackPage = new createButton(0.07*screen.width, 0.09*screen.height, 0.13*screen.width, 0.64*screen.height, "backShop();", "backShop", "shopPage");
@@ -43,7 +64,7 @@ function startCanvas() {
   rightSideCanvas = new component(0.22*screen.width, 0.8*screen.height, "#20B2AA", 0.68*screen.width, 0, "color");
   botSideCanvas = new component(0.68*screen.width, 0.1*screen.height, "#FFDAB9", 0, 0.7*screen.height, "color");
 
-  buttonOne = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.1*screen.height, "console.log(petFoods['petFoodOne']);", "buttonOne", "menuButton", "");
+  buttonOne = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.1*screen.height, "alert(petToys['petItemThree']);", "buttonOne", "menuButton", "");
   buttonTwo = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.2*screen.height, "openCookie();", "buttonTwo", "menuButton", "Gold Cookie");
   buttonThree = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.3*screen.height, "openShop();", "buttonThree", "menuButton", "Shop");
   buttonFour = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.4*screen.height, "openInventory();", "buttonFour", "menuButton", "Inventory");
@@ -58,6 +79,63 @@ function startCanvas() {
   myCanvasArea.start();
 }
 
+function useItem(item) {
+  switch(item) {
+    case 1:
+      if (currentBag == "food") {
+        if (petFoods.petItemOne >= 1) { pushHunger = 1; petFoods.petItemOne -= 1; updateInventoryComponents(); }
+      }
+      else if (currentBag == "toy") {
+        alert("hi");
+      }
+      break;
+    case 2:
+      if (currentBag == "food") {
+        if (petFoods.petItemTwo >= 1) { pushHunger = 3; petFoods.petItemTwo -= 1; updateInventoryComponents(); }
+      }
+      else if (currentBag == "toy") {
+        alert("hi2");
+      }
+      break;
+    case 3:
+      if (currentBag == "food") {
+        if (petFoods.petItemThree >= 1) { pushHunger = 5; petFoods.petItemThree -= 1; updateInventoryComponents(); }
+      }
+      else if (currentBag == "toy") {
+        alert("hi3");
+      }
+      break;
+    case 4:
+      if (currentBag == "food") {
+        if (petFoods.petItemFour >= 1) { pushHunger = 10; petFoods.petItemFour -= 1; updateInventoryComponents(); }
+      }
+      else if (currentBag == "toy") {
+        alert("hi4");
+      }
+      break;
+    case 5:
+      if (currentBag == "food") {
+        if (petFoods.petItemFive >= 1) { pushHunger = 20; petFoods.petItemFive -= 1; updateInventoryComponents(); }
+      }
+      else if (currentBag == "toy") {
+        alert("hi5");
+      }
+      break;
+    case 6:
+      if (currentBag == "food") {
+        if (petFoods.petItemSix >= 1) { pushHunger = 50; petFoods.petItemSix -= 1; updateInventoryComponents(); }
+      }
+      else if (currentBag == "toy") {
+        alert("hi6");
+      }
+      break;
+  }
+}
+
+/*
+Sets out the main background canvas. Then edits the HTML such that the canvas tag is under the body tag.
+Also has the clear function, and stop function for debugging purposes.
+*/
 var myCanvasArea = {
   canvas : document.createElement("canvas"),
   start : function() {
@@ -77,9 +155,10 @@ var myCanvasArea = {
   }
 }
 
-function returnOwnedFoodAmount(id, givenID, text) {
+function returnOwnedItemAmount(id, givenID, text) {
   if (id == givenID) {
-    return "Owned: " + petFoods[givenID];
+    if (currentBag == "food") { return "Owned: " + petFoods[givenID]; }
+    else if (currentBag == "toy") { return "Owned: " + petToys[givenID]; }
   }
   else {
     return text;
@@ -102,9 +181,9 @@ function createButton(width, height, x, y, output, id, buttonClass, text="", sty
 
   this.updateButton = function() {
     this.context.clearRect(0, 0, this.buttonCanvas.width, this.buttonCanvas.height);
-    var feedButtons = ['petFoodOne', 'petFoodTwo', 'petFoodThree', 'petFoodFour', 'petFoodFive', 'petFoodSix'];
+    var feedButtons = ['petItemOne', 'petItemTwo', 'petItemThree', 'petItemFour', 'petItemFive', 'petItemSix'];
     for (const item of feedButtons) {
-      this.text = returnOwnedFoodAmount(id, item, text);
+      this.text = returnOwnedItemAmount(id, item, text);
       canvasFont(this.context, style, textColor, this.text, width/2, height/2+3);
     }
     buttonStyling.style.left = x + "px";
@@ -194,7 +273,7 @@ function canvasFont(ctx, style, color, text, width, height) {
 }
 
 function askPetName() {
-  alertify.prompt( "What's your pet's name?", 'Enter Pet Name:', 'Pet'
+  alertify.promptNoCancel( "What's your pet's name?", 'Enter Pet Name:', 'Pet'
                , function(evt, value) { createCookie("petName", value, 999); petName = readCookie("petName"); refreshReactions(); }
                , function() { alert("you will never see this, this is an easter egg !!") });
 }
@@ -212,60 +291,106 @@ var emotions = {
   }
 }
 
-function updateEmotion(personality) {
-  if (emotions.affection > 80 && emotions.loneliness < 30) {
-    // Derive an algorithm to accurately update emotion.
-    return reactions.love;
-  }
-}
-
 var petFoods = {
-  petFoodOne: 0,
-  petFoodTwo: 0,
-  petFoodThree: 0,
-  petFoodFour: 0,
-  petFoodFive: 0,
-  petFoodSix: 0
+  petItemOne: 5,
+  petItemTwo: 0,
+  petItemThree: 0,
+  petItemFour: 0,
+  petItemFive: 0,
+  petItemSix: 0
 }
 
-function purchaseFood(foodNumber) {
+var petToys = {
+  petItemOne: 5,
+  petItemTwo: 0,
+  petItemThree: 0,
+  petItemFour: 0,
+  petItemFive: 0,
+  petItemSix: 0
+}
+
+function askPurchaseConfirmation(price, product) {
+  var purchased = false;
+  alertify.confirm('Buying Confimation', 'Are you sure you wanna buy this product?'
+    , function(){ gold -= price; purchased = true; eval(product + "+= 1"); }
+    , function(){});
+    // return purchased;
+}
+
+function purchaseItem(itemNumber) {
   // TODO: Functionality to purchase multiple.
-  switch(foodNumber) {
+  switch (itemNumber) {
     case 1:
       if (gold >= 5) {
-        alertify.confirm('Buying Confimation', 'Are you sure you wanna buy this product?'
-                , function(){ gold -= 5; petFoods.petFoodOne += 1; }
-                , function(){});
+        switch (currentShop) {
+          case "food":
+            // if (askPurchaseConfirmation(5)) { petFoods.petFoodOne = 1; console.log(petFoods.petFoodOne); }
+            askPurchaseConfirmation(5, "petFoods.petItemOne");
+            break;
+          case "toy":
+            askPurchaseConfirmation(5, "petToys.petItemOne");
+            break;
+        }
       }
       break;
     case 2:
       if (gold >= 10) {
-        gold -= 10;
-        petFoods.petFoodTwo += 1;
+        switch (currentShop) {
+          case "food":
+            askPurchaseConfirmation(10, "petFoods.petItemTwo");
+            break;
+          case "toy":
+            askPurchaseConfirmation(10, "petToys.petItemTwo");
+            break;
+        }
       }
       break;
     case 3:
       if (gold >= 15) {
-        gold -= 15;
-        petFoods.petFoodThree += 1;
+        switch (currentShop) {
+          case "food":
+            askPurchaseConfirmation(15, "petFoods.petItemThree");
+            break;
+          case "toy":
+            askPurchaseConfirmation(15, "petToys.petItemThree");
+            break;
+        }
       }
       break;
     case 4:
       if (gold >= 25) {
-        gold -= 25;
-        petFoods.petFoodFour += 1;
+        switch (currentShop) {
+          case "food":
+            askPurchaseConfirmation(25, "petFoods.petItemFour");
+            break;
+          case "toy":
+            askPurchaseConfirmation(25, "petToys.petItemFour");
+            break;
+        }
       }
       break;
     case 5:
       if (gold >= 50) {
-        gold -= 50;
-        petFoods.petFoodFive += 1;
+        switch (currentShop) {
+          case "food":
+            askPurchaseConfirmation(50, "petFoods.petItemFive");
+            break;
+          case "toy":
+            askPurchaseConfirmation(50, "petToys.petItemFive");
+            break;
+        }
       }
       break;
     case 6:
       if (gold >= 100) {
-        gold -= 100;
-        petFoods.petFoodSix += 1;
+        switch (currentShop) {
+          case "food":
+            askPurchaseConfirmation(100, "petFoods.petItemSix");
+            break;
+          case "toy":
+            askPurchaseConfirmation(100, "petToys.petItemSix");
+            break;
+        }
       }
       break;
   }
@@ -279,10 +404,34 @@ function addGold() {
   }
 }
 
-function openShop() {
+function nextShop() {
+  switch(currentShop) {
+    case "food":
+      openToyShop();
+  }
+  switch(currentBag) {
+    case "food":
+      openToyInventory();
+  }
+}
+
+function backShop() {
+  switch(currentShop) {
+    case "toy":
+      openShop();
+  }
+  switch(currentBag) {
+    case "toy":
+      openInventory();
+  }
+}
+
+function openToyShop() {
   closeAll();
+  currentShop = "toy";
   mainImageVisibility = false;
-  listOfFoods = true;
+  listOfFoods = false;
+  listOfToys = true;
   menuBackground = true;
   currentMenu = "shop";
   var buyButton = document.getElementsByClassName('buyButton');
@@ -296,24 +445,24 @@ function openShop() {
   document.getElementById('shopClose').style.visibility = 'visible';
 }
 
-function updateInventoryComponents() {
-  var availableFoods = [];
-  var unavailableFoods = [];
-  var petFoodTypes = Object.keys(petFoods);
-  for (var i = 0; i < petFoodTypes.length; i++) {
-    if (petFoods[petFoodTypes[i]] >= 1) {
-      availableFoods.push(petFoodTypes[i]);
+function updateInventoryComponents(dict) {
+  var availableItems = [];
+  var unavailableItems = [];
+  var petItemTypes = Object.keys(dict);
+  for (var i = 0; i < petItemTypes.length; i++) {
+    if (dict[petItemTypes[i]] >= 1) {
+      availableItems.push(petItemTypes[i]);
     }
     else {
-      unavailableFoods.push(petFoodTypes[i]);
+      unavailableItems.push(petItemTypes[i]);
     }
   }
-  for (var i = 0; i < availableFoods.length; i++) {
-    var usableButton = document.getElementById(availableFoods[i]);
+  for (var i = 0; i < availableItems.length; i++) {
+    var usableButton = document.getElementById(availableItems[i]);
     usableButton.style.backgroundColor = "#228B22";
   }
-  for (var i = 0; i < unavailableFoods.length; i++) {
-    var unusableButton = document.getElementById(unavailableFoods[i]);
+  for (var i = 0; i < unavailableItems.length; i++) {
+    var unusableButton = document.getElementById(unavailableItems[i]);
     unusableButton.style.backgroundColor = "#D3D3D3";
   }
 }
@@ -343,8 +492,48 @@ function openCookie() {
   mainImageVisibility = false;
   menuBackground = true;
   listOfFoods = false;
+  listOfToys = false;
   currentMenu = "cookie";
   document.getElementById('cookieClicker').style.visibility = 'visible';
+  document.getElementById('shopClose').style.visibility = 'visible';
+}
+
+function openShop() {
+  closeAll();
+  currentShop = "food";
+  mainImageVisibility = false;
+  listOfFoods = true;
+  listOfToys = false;
+  menuBackground = true;
+  currentMenu = "shop";
+  var buyButton = document.getElementsByClassName('buyButton');
+  var shopPage = document.getElementsByClassName('shopPage');
+  for (var i = 0; i < buyButton.length; i++) {
+    buyButton[i].style.visibility = 'visible';
+  }
+  for (var i = 0; i < shopPage.length; i++) {
+    shopPage[i].style.visibility = 'visible';
+  }
+  document.getElementById('shopClose').style.visibility = 'visible';
+}
+
+function openToyInventory() {
+  closeAll();
+  mainImageVisibility = false;
+  menuBackground = true;
+  listOfFoods = false;
+  listOfToys = true;
+  currentBag = "toy";
+  currentMenu = "bag";
+  updateInventoryComponents(petToys);
+  var useButton = document.getElementsByClassName('useButton');
+  var shopPage = document.getElementsByClassName('shopPage');
+  for (var i = 0; i < buyButton.length; i++) {
+    useButton[i].style.visibility = 'visible';
+  }
+  for (var i = 0; i < shopPage.length; i++) {
+    shopPage[i].style.visibility = 'visible';
+  }
   document.getElementById('shopClose').style.visibility = 'visible';
 }
 
@@ -353,19 +542,26 @@ function openInventory() {
   mainImageVisibility = false;
   menuBackground = true;
   listOfFoods = true;
+  listOfToys = false;
+  currentBag = "food";
   currentMenu = "bag";
-  updateInventoryComponents();
+  updateInventoryComponents(petFoods);
   var useButton = document.getElementsByClassName('useButton');
+  var shopPage = document.getElementsByClassName('shopPage');
   for (var i = 0; i < useButton.length; i++) {
     useButton[i].style.visibility = 'visible';
   }
+  for (var i = 0; i < shopPage.length; i++) {
+    shopPage[i].style.visibility = 'visible';
+  }
   document.getElementById('shopClose').style.visibility = 'visible';
-  document.getElementById('infoButton').style.visibility = 'visible';
 }
 
 function closeAll() {
+  currentShop = "";
   mainImageVisibility = true;
   listOfFoods = false;
+  listOfToys = false;
   menuBackground = false;
   currentMenu = "home";
   var buyButton = document.getElementsByClassName('buyButton');
@@ -411,6 +607,18 @@ function eraseCookie(name) {
 	createCookie(name,"",-1);
 }
 
+// Cookie code ends here.
+
+// The following code is the main code of the simulation, as it is the piece of code that gives the pet feelings.
+// It emulates feelings.
+
+function updateEmotion(personality) {
+  if (emotions.affection > 80 && emotions.loneliness < 30) {
+    // Derive an algorithm to accurately update emotion.
+    return reactions.love;
+  }
+}
+
 $( document ).ready(function(event) {
   var currentDate = new Date().getTime();
   var previousDate = readCookie("lastSeen");
@@ -438,13 +646,12 @@ function refreshReactions() {
 
 window.addEventListener('beforeunload', function (event) {
   var currentDate = new Date().getTime();
-  console.log(currentDate);
   createCookie("lastSeen", currentDate, 365);
 });
 
 function updateGameArea() {
   myCanvasArea.clear();
-  var myComponents = [fillerImage, shopCanvas, rightSideCanvas, botSideCanvas, hungerBar, petFoodOne, petFoodTwo, petFoodThree, petFoodFour, petFoodFive, petFoodSix];
+  var myComponents = [fillerImage, shopCanvas, rightSideCanvas, botSideCanvas, hungerBar, petFoodOne, petFoodTwo, petFoodThree, petFoodFour, petFoodFive, petFoodSix, petToyOne, petToyTwo, petToyThree, petToyFour, petToyFive, petToySix];
   for (const item of myComponents) {
     item.update();
   }
