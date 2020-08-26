@@ -12,6 +12,8 @@ var gold = 100;
 var reactions = {};
 var upcomingEvent;
 var timePassed;
+var playPoints = 0;
+var scorePercent;
 var currentShop = "";
 var currentBag = "";
 var pushHunger = 0;
@@ -21,6 +23,7 @@ var listOfToys = false;
 var menuBackground = false;
 var goldPoints = 0;
 var currentMenu = "home";
+TimeMe.initialize({ currentPageName: "main_page", idleTimeoutInSeconds: -1 });
 
 // The following code are hard defined. They have a definite (x, y) coordinate, as well as a (width, height).
 
@@ -64,7 +67,7 @@ function startCanvas() {
   rightSideCanvas = new component(0.22*screen.width, 0.8*screen.height, "#20B2AA", 0.68*screen.width, 0, "color");
   botSideCanvas = new component(0.68*screen.width, 0.1*screen.height, "#FFDAB9", 0, 0.7*screen.height, "color");
 
-  buttonOne = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.1*screen.height, "alert(petToys['petItemThree']);", "buttonOne", "menuButton", "");
+  buttonOne = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.1*screen.height, "createEmotion();", "buttonOne", "menuButton", "");
   buttonTwo = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.2*screen.height, "openCookie();", "buttonTwo", "menuButton", "Gold Cookie");
   buttonThree = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.3*screen.height, "openShop();", "buttonThree", "menuButton", "Shop");
   buttonFour = new createButton(0.17*screen.width, 0.06*screen.height, 0.755*screen.width, 0.4*screen.height, "openInventory();", "buttonFour", "menuButton", "Inventory");
@@ -79,54 +82,58 @@ function startCanvas() {
   myCanvasArea.start();
 }
 
+function alertUsedToy(text, play_increase) {
+  alertify.alert('You played with ' + petName + "!", text, playPoints += play_increase);
+}
+
 function useItem(item) {
   switch(item) {
     case 1:
       if (currentBag == "food") {
-        if (petFoods.petItemOne >= 1) { pushHunger = 1; petFoods.petItemOne -= 1; updateInventoryComponents(); }
+        if (petFoods.petItemOne >= 1) { pushHunger = 1; petFoods.petItemOne -= 1; updateInventoryComponents(petFoods); }
       }
       else if (currentBag == "toy") {
-        alert("hi");
+        if (petToys.petItemOne >= 1) { alertUsedToy("Your pet played with a toy train! " + petName + " had a little bit of fun doing so.", 5); petToys.petItemOne -= 1; updateInventoryComponents(petToys); }
       }
       break;
     case 2:
       if (currentBag == "food") {
-        if (petFoods.petItemTwo >= 1) { pushHunger = 3; petFoods.petItemTwo -= 1; updateInventoryComponents(); }
+        if (petFoods.petItemTwo >= 1) { pushHunger = 3; petFoods.petItemTwo -= 1; updateInventoryComponents(petFoods); }
       }
       else if (currentBag == "toy") {
-        alert("hi2");
+        if (petToys.petItemTwo >= 1) { alertUsedToy("Your pet played with a toy train! " + petName + " seems to have enjoyed a little.", 10); petToys.petItemTwo -= 1; updateInventoryComponents(petToys); }
       }
       break;
     case 3:
       if (currentBag == "food") {
-        if (petFoods.petItemThree >= 1) { pushHunger = 5; petFoods.petItemThree -= 1; updateInventoryComponents(); }
+        if (petFoods.petItemThree >= 1) { pushHunger = 5; petFoods.petItemThree -= 1; updateInventoryComponents(petFoods); }
       }
       else if (currentBag == "toy") {
-        alert("hi3");
+        if (petToys.petItemThree >= 1) { alertUsedToy("Your pet played with a toy train! It seems like " + petName + " had fun.", 20); petToys.petItemThree -= 1; updateInventoryComponents(petToys); }
       }
       break;
     case 4:
       if (currentBag == "food") {
-        if (petFoods.petItemFour >= 1) { pushHunger = 10; petFoods.petItemFour -= 1; updateInventoryComponents(); }
+        if (petFoods.petItemFour >= 1) { pushHunger = 10; petFoods.petItemFour -= 1; updateInventoryComponents(petFoods); }
       }
       else if (currentBag == "toy") {
-        alert("hi4");
+        if (petToys.petItemFour >= 1) { alertUsedToy("Your pet played with a toy train! " + petName + " really enjoyed doing that!", 30); petToys.petItemFour -= 1; updateInventoryComponents(petToys); }
       }
       break;
     case 5:
       if (currentBag == "food") {
-        if (petFoods.petItemFive >= 1) { pushHunger = 20; petFoods.petItemFive -= 1; updateInventoryComponents(); }
+        if (petFoods.petItemFive >= 1) { pushHunger = 20; petFoods.petItemFive -= 1; updateInventoryComponents(petFoods); }
       }
       else if (currentBag == "toy") {
-        alert("hi5");
+        if (petToys.petItemFive >= 1) { alertUsedToy("Your pet played with a toy train! " + petName + "had a LOT of fun!", 50); petToys.petItemFive -= 1; updateInventoryComponents(petToys); }
       }
       break;
     case 6:
       if (currentBag == "food") {
-        if (petFoods.petItemSix >= 1) { pushHunger = 50; petFoods.petItemSix -= 1; updateInventoryComponents(); }
+        if (petFoods.petItemSix >= 1) { pushHunger = 50; petFoods.petItemSix -= 1; updateInventoryComponents(petFoods); }
       }
       else if (currentBag == "toy") {
-        alert("hi6");
+        if (petToys.petItemSix >= 1) { alertUsedToy("Your pet played with a toy train! It's almost as if " + petName + " had a small party with itself!", 100); petToys.petItemSix -= 1; updateInventoryComponents(petToys); }
       }
       break;
   }
@@ -243,10 +250,12 @@ function component(width, height, color, x, y, type, rate=0, visibility=true) {
       if (scoreWidth > 0) {
         scoreWidth = scoreWidth - this.rate;
       }
+      scorePercent = Math.ceil((scoreWidth/this.width) * 100);
       ctx.fillStyle = "#3B444B";
       ctx.fillRect(this.x, this.y, this.width + 5, this.height);
       ctx.fillStyle = color;
       ctx.fillRect(this.x, this.y, scoreWidth, this.height);
+      canvasFont(ctx, "25px Palatine Linotype", "orange", "Hunger: " + scorePercent, this.x + 0.09*screen.width, this.y + 0.09*screen.height);
     }
     else if (type == "backgroundColor") {
       if (eval(this.visibility) == true) {
@@ -394,6 +403,10 @@ function purchaseItem(itemNumber) {
       }
       break;
   }
+}
+
+function randInteger(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
 
 function addGold() {
@@ -559,6 +572,7 @@ function openInventory() {
 
 function closeAll() {
   currentShop = "";
+  currentBag = "";
   mainImageVisibility = true;
   listOfFoods = false;
   listOfToys = false;
@@ -612,11 +626,26 @@ function eraseCookie(name) {
 // The following code is the main code of the simulation, as it is the piece of code that gives the pet feelings.
 // It emulates feelings.
 
-function updateEmotion(personality) {
-  if (emotions.affection > 80 && emotions.loneliness < 30) {
-    // Derive an algorithm to accurately update emotion.
-    return reactions.love;
+function checkHungerDifference() {
+  var currentHunger = scorePercent;
+  if (previousHunger === undefined) { createCookie("previousHunger", currentHunger, 999); return 100-currentHunger; }
+  else {
+    hungerDifference = readCookie("previousHunger") - currentHunger;
+    createCookie("previousHunger", currentHunger, 999);
+    return hungerDifference;
   }
+}
+
+function createEmotion() {
+  var timeSpentOnPage = TimeMe.getTimeOnCurrentPageInSeconds().toFixed();
+  var hungerDifference = checkHungerDifference(); // Returns a number from -120 to 120. Negative = Increase. Positive = Decrease.
+  timePassed = timePassed;
+  playPoints = playPoints;
+
+}
+
+function updateEmotion() {
+  setInterval(createEmotion, 1000 * 60 * 10); // Do that every ten minutes.
 }
 
 $( document ).ready(function(event) {
