@@ -18,6 +18,7 @@ var currentShop = "";
 var currentBag = "";
 var loadHunger = false;
 var pushHunger = 0;
+var duckDead = false;
 var watchingYoutube = false;
 
 var mainImageVisibility = true;
@@ -47,18 +48,18 @@ function startCanvas() {
   shopClose = new createButton(0.07*screen.width, 0.09*screen.height, 0.13*screen.width, 0.15*screen.height, "closeAll();", "shopClose");
 
   petFoodOne = new component(0.08*screen.width, 0.11*screen.height, "orange.png", 0.15*screen.width, 0.14*screen.height, "image", 0, "listOfFoods");
-  petFoodTwo = new component(0.08*screen.width, 0.11*screen.height, "cat_food.jpg", 0.30*screen.width, 0.14*screen.height, "image", 0, "listOfFoods");
-  petFoodThree = new component(0.08*screen.width, 0.13*screen.height, "meat.png", 0.45*screen.width, 0.12*screen.height, "image", 0, "listOfFoods");
-  petFoodFour = new component(0.08*screen.width, 0.14*screen.height, "fish_food.jpg", 0.155*screen.width, 0.36*screen.height, "image", 0, "listOfFoods");
-  petFoodFive = new component(0.08*screen.width, 0.13*screen.height, "premium_food.jpg", 0.30*screen.width, 0.37*screen.height, "image", 0, "listOfFoods");
-  petFoodSix = new component(0.08*screen.width, 0.12*screen.height, "catnip.png", 0.45*screen.width, 0.38*screen.height, "image", 0, "listOfFoods");
+  petFoodTwo = new component(0.08*screen.width, 0.11*screen.height, "wheat.png", 0.30*screen.width, 0.14*screen.height, "image", 0, "listOfFoods");
+  petFoodThree = new component(0.08*screen.width, 0.11*screen.height, "meat.png", 0.45*screen.width, 0.14*screen.height, "image", 0, "listOfFoods");
+  petFoodFour = new component(0.08*screen.width, 0.14*screen.height, "fish_food.png", 0.155*screen.width, 0.36*screen.height, "image", 0, "listOfFoods");
+  petFoodFive = new component(0.08*screen.width, 0.13*screen.height, "premium_food.png", 0.30*screen.width, 0.37*screen.height, "image", 0, "listOfFoods");
+  petFoodSix = new component(0.08*screen.width, 0.12*screen.height, "earthworm.png", 0.45*screen.width, 0.38*screen.height, "image", 0, "listOfFoods");
 
-  petToyOne = new component(0.08*screen.width, 0.11*screen.height, "train.png", 0.15*screen.width, 0.14*screen.height, "image", 0, "listOfToys");
-  petToyTwo = new component(0.08*screen.width, 0.11*screen.height, "train.png", 0.30*screen.width, 0.14*screen.height, "image", 0, "listOfToys");
+  petToyOne = new component(0.08*screen.width, 0.13*screen.height, "teddy.png", 0.15*screen.width, 0.12*screen.height, "image", 0, "listOfToys");
+  petToyTwo = new component(0.08*screen.width, 0.09*screen.height, "car.png", 0.30*screen.width, 0.16*screen.height, "image", 0, "listOfToys");
   petToyThree = new component(0.08*screen.width, 0.13*screen.height, "train.png", 0.45*screen.width, 0.12*screen.height, "image", 0, "listOfToys");
-  petToyFour = new component(0.08*screen.width, 0.14*screen.height, "train.png", 0.155*screen.width, 0.36*screen.height, "image", 0, "listOfToys");
-  petToyFive = new component(0.08*screen.width, 0.13*screen.height, "train.png", 0.30*screen.width, 0.37*screen.height, "image", 0, "listOfToys");
-  petToySix = new component(0.08*screen.width, 0.12*screen.height, "train.png", 0.45*screen.width, 0.38*screen.height, "image", 0, "listOfToys");
+  petToyFour = new component(0.08*screen.width, 0.14*screen.height, "bone.png", 0.155*screen.width, 0.36*screen.height, "image", 0, "listOfToys");
+  petToyFive = new component(0.08*screen.width, 0.13*screen.height, "ball.png", 0.30*screen.width, 0.37*screen.height, "image", 0, "listOfToys");
+  petToySix = new component(0.08*screen.width, 0.12*screen.height, "duck_plushie.png", 0.45*screen.width, 0.38*screen.height, "image", 0, "listOfToys");
 
   foodOneBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.204*screen.width, 0.31*screen.height, "purchaseItem(1);", "buyButton", "buyButton", "Cost: 5 Gold", "15px Optima", "#708090");
   foodTwoBuy = new createButton(0.08*screen.width, 0.035*screen.height, 0.35*screen.width, 0.31*screen.height, "purchaseItem(2);", "buyButton", "buyButton", "Cost: 10 Gold", "15px Optima", "#708090");
@@ -87,10 +88,10 @@ function startCanvas() {
 
   infoButton = new createButton(0.07*screen.width, 0.09*screen.height, 0.689*screen.width, 0.7*screen.height, "openInfo();", "infoButton", "infoButton");
 
-  cookieClicker = new createButton(0.3*screen.width, 0.3*screen.height, 0.24*screen.width, 0.25*screen.height, "addGold();", "cookieClicker", "cookieClicker");
+  cookieClicker = new createButton(0.2*screen.width, 0.3*screen.height, 0.29*screen.width, 0.25*screen.height, "addGold();", "cookieClicker", "cookieClicker");
 
   // Currently, the hungerBar reduces to zero in two hours.
-  hungerBar = new component(0.177*screen.width, 0.04*screen.height, "#F7B267", 0.7*screen.width, 0.5*screen.height, "scoreBar", (20 / (2 * 60 * 60 * 1000)) * 0.177*screen.width);
+  hungerBar = new component(0.177*screen.width, 0.04*screen.height, "#F7B267", 0.7*screen.width, 0.5*screen.height, "scoreBar", (20 / (60 * 1000)) * 0.177*screen.width);
   myCanvasArea.start(); // Loads the main canvas.
 }
 
@@ -223,6 +224,12 @@ function component(width, height, color, x, y, type, rate=0, visibility=true) {
       }
       if (scoreWidth > 0) {
         scoreWidth = scoreWidth - this.rate;
+      }
+      if (scoreWidth <= 0) {
+        console.log('hi');
+        duckDead = true;
+        createEmotion();
+        alertify.alert('Duck is Dead.', "Your duck is dead. And you killed it. <br> Are you <strong>happy</strong>?<br>Are you <strong>proud</strong>?<br>Are you <strong>satisfied</strong>?<br>Because the truth is, you killed it. <font color = '#8a0303'>You killed the duck.</font>");
       }
       scorePercent = Math.ceil((scoreWidth/this.width) * 100);
       ctx.fillStyle = "#3B444B";
@@ -417,10 +424,10 @@ function getRandInteger(min, max) {
   return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
 
-// Adds a gold after 5 gold points.
+// Adds a gold after 2 gold points.
 
 function addGold() {
-  goldPoints += 0.2;
+  goldPoints += 0.5;
   if (goldPoints == 1) {
     gold += 1;
     goldPoints = 0;
@@ -700,15 +707,20 @@ function createEmotion() {
 
   var emotionEquation = ((2 * playPoints) + (1.5 * Math.sqrt(timeSpentOnPage)) + randomNum - (hungerDifference / 3)) / timeDifference;
   // Average Value = 75. (Therefore base value = 75)
-  if (emotionEquation < -30) { currentReaction = reactions.angry; mainImageOne = "duck_angry.svg"; mainImageTwo = "duck_angry_2.svg"; }
-  else if (emotionEquation.between(-30, 0)) { currentReaction = reactions.sad; mainImageOne = "duck_depressed.svg"; mainImageTwo = "duck_depressed_2.svg"; }
-  else if (emotionEquation.between(0, 30)) { currentReaction = reactions.dislike; mainImageOne = "duck_dislike.svg"; mainImageTwo = "duck_dislike_2.svg"; }
-  else if (emotionEquation.between(30, 50)) { currentReaction = reactions.indifferent; mainImageOne = "duck_dislike.svg"; mainImageTwo = "duck_dislike_2.svg"; }
-  else if (emotionEquation.between(50, 100)) { currentReaction = reactions.happy; mainImageOne = "duck_neutral.svg"; mainImageTwo = "duck_neutral_2.svg"; }
-  else if (emotionEquation.between(100, 140)) {currentReaction = reactions.cheerful; mainImageOne = "duck_neutral.svg"; mainImageTwo = "duck_happy_2.svg"; }
-  else if (emotionEquation > 140) { currentReaction = reactions.love; mainImageOne = "duck_love.svg"; mainImageTwo = "duck_love_2.svg"; }
-  else { currentReaction = reactions.happy; mainImageOne = "duck_neutral.svg"; mainImageTwo = "duck_neutral_2.svg"; }
-
+  console.log(duckDead);
+  if (duckDead == true) {
+    currentReaction = "Your Duck is Dead. And you killed it. Are you happy?"; mainImageOne = "duck_dead.svg"; mainImageTwo = "duck_dead.svg";
+  }
+  else {
+    if (emotionEquation < -30) { currentReaction = reactions.angry; mainImageOne = "duck_angry.svg"; mainImageTwo = "duck_angry_2.svg"; }
+    else if (emotionEquation.between(-30, 0)) { currentReaction = reactions.sad; mainImageOne = "duck_depressed.svg"; mainImageTwo = "duck_depressed_2.svg"; }
+    else if (emotionEquation.between(0, 30)) { currentReaction = reactions.dislike; mainImageOne = "duck_dislike.svg"; mainImageTwo = "duck_dislike_2.svg"; }
+    else if (emotionEquation.between(30, 50)) { currentReaction = reactions.indifferent; mainImageOne = "duck_dislike.svg"; mainImageTwo = "duck_dislike_2.svg"; }
+    else if (emotionEquation.between(50, 100)) { currentReaction = reactions.happy; mainImageOne = "duck_neutral.svg"; mainImageTwo = "duck_neutral_2.svg"; }
+    else if (emotionEquation.between(100, 140)) {currentReaction = reactions.cheerful; mainImageOne = "duck_neutral.svg"; mainImageTwo = "duck_happy_2.svg"; }
+    else if (emotionEquation > 140) { currentReaction = reactions.love; mainImageOne = "duck_love.svg"; mainImageTwo = "duck_love_2.svg"; }
+    else { currentReaction = reactions.happy; mainImageOne = "duck_neutral.svg"; mainImageTwo = "duck_neutral_2.svg"; }
+  }
   if (watchingYoutube) { playValues += (1.6) }
   else { playValues -= (0.8); }
 

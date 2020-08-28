@@ -48,8 +48,7 @@ body {
   margin: 0;
   position: absolute;
   display: block;
-  background-image: url("images/cookie.jpg");
-  border: 2px groove #A52A2A;
+  background-image: url("images/cookie.png");
   background-repeat: no-repeat;
   background-size: 100% 100%;
   visibility: hidden;
