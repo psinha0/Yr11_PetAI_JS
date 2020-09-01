@@ -91,7 +91,7 @@ function startCanvas() {
   cookieClicker = new createButton(0.2*screen.width, 0.3*screen.height, 0.29*screen.width, 0.25*screen.height, "addGold();", "cookieClicker", "cookieClicker");
 
   // Currently, the hungerBar reduces to zero in two hours.
-  hungerBar = new component(0.177*screen.width, 0.04*screen.height, "#F7B267", 0.7*screen.width, 0.5*screen.height, "scoreBar", (20 / (60 * 1000)) * 0.177*screen.width);
+  hungerBar = new component(0.177*screen.width, 0.04*screen.height, "#F7B267", 0.7*screen.width, 0.5*screen.height, "scoreBar", (20 / (2 * 60 * 60 * 1000)) * 0.177*screen.width);
   myCanvasArea.start(); // Loads the main canvas.
 }
 
@@ -288,7 +288,7 @@ function askPurchaseConfirmation(price, product) {
   alertify.prompt('Buying Confirmation', 'How many do you want to buy?', 1
     , function(evt, value) {
        var total_price = value * price;
-       if (gold >= (total_price)) { gold -= total_price; eval(product + "+=" + value); alertify.success('Bought ' + value + ' products worth ' + total_price + ' gold!')}
+       if (gold >= (total_price) && value >= 0) { gold -= total_price; eval(product + "+=" + value); alertify.success('Bought ' + value + ' products worth ' + total_price + ' gold!')}
        else { alertify.error('Not Enough Gold!') }
      }
     , function(){ alertify.error('Purchase Cancelled!') }).set('type', 'number');
@@ -429,7 +429,7 @@ function getRandInteger(min, max) {
 function addGold() {
   goldPoints += 0.5;
   if (goldPoints == 1) {
-    gold += 1;
+    gold += 10;
     goldPoints = 0;
   }
 }
