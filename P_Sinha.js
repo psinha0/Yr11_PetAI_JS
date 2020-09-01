@@ -18,6 +18,7 @@ var currentShop = "";
 var currentBag = "";
 var loadHunger = false;
 var pushHunger = 0;
+var tryAgain = false;
 var duckDead = false;
 var watchingYoutube = false;
 
@@ -91,7 +92,7 @@ function startCanvas() {
   cookieClicker = new createButton(0.2*screen.width, 0.3*screen.height, 0.29*screen.width, 0.25*screen.height, "addGold();", "cookieClicker", "cookieClicker");
 
   // Currently, the hungerBar reduces to zero in two hours.
-  hungerBar = new component(0.177*screen.width, 0.04*screen.height, "#F7B267", 0.7*screen.width, 0.5*screen.height, "scoreBar", (20 / (2 * 60 * 60 * 1000)) * 0.177*screen.width);
+  hungerBar = new component(0.177*screen.width, 0.04*screen.height, "#F7B267", 0.7*screen.width, 0.5*screen.height, "scoreBar", (20 / (10 * 1000)) * 0.177*screen.width);
   myCanvasArea.start(); // Loads the main canvas.
 }
 
@@ -226,10 +227,11 @@ function component(width, height, color, x, y, type, rate=0, visibility=true) {
         scoreWidth = scoreWidth - this.rate;
       }
       if (scoreWidth <= 0) {
-        console.log('hi');
         duckDead = true;
         createEmotion();
-        alertify.alert('Duck is Dead.', "Your duck is dead. And you killed it. <br> Are you <strong>happy</strong>?<br>Are you <strong>proud</strong>?<br>Are you <strong>satisfied</strong>?<br>Because the truth is, you killed it. <font color = '#8a0303'>You killed the duck.</font>");
+        alertify.alert('Duck is Dead.'
+        , "Your duck is dead. And you killed it. <br> Are you <strong>happy</strong>?<br>Are you <strong>proud</strong>?<br>Are you <strong>satisfied</strong>?<br>Because the truth is, you killed it. <font color = '#8a0303'>You killed the duck.</font>"
+        , function(evt) { resetCookies(); tryAgain = true; duckDead = false; document.location.reload(true); } );
       }
       scorePercent = Math.ceil((scoreWidth/this.width) * 100);
       ctx.fillStyle = "#3B444B";
@@ -680,7 +682,7 @@ function createEmotion() {
   else {var hungerDifference = checkHungerDifference(); } // Returns a number from -108 to 108. Negative = Increase. Positive = Decrease.}
   var randomNum = getRandInteger(-25, 25);
   if (timePassed <= 0) { var timeDifference = 1; }
-  else { timeDifference = timePassed; timePassed -= 0.01; }
+  else { timeDifference = timePassed; timePassed -= 0.1; }
   var playPoints = playValues;
 
   /*
@@ -707,7 +709,6 @@ function createEmotion() {
 
   var emotionEquation = ((2 * playPoints) + (1.5 * Math.sqrt(timeSpentOnPage)) + randomNum - (hungerDifference / 3)) / timeDifference;
   // Average Value = 75. (Therefore base value = 75)
-  console.log(duckDead);
   if (duckDead == true) {
     currentReaction = "Your Duck is Dead. And you killed it. Are you happy?"; mainImageOne = "duck_dead.svg"; mainImageTwo = "duck_dead.svg";
   }
@@ -723,8 +724,6 @@ function createEmotion() {
   }
   if (watchingYoutube) { playValues += (1.6) }
   else { playValues -= (0.8); }
-
-  console.log(emotionEquation);
   createCookie("playPoints", playValues, 999);
 }
 
@@ -756,6 +755,7 @@ function resetCookies() {
   eraseCookie('playPoints');
   eraseCookie('gold');
   eraseCookie('exitHunger');
+  eraseCookie('previousHunger');
 }
 
 // When the page loads, execute these functions. This returns the time passed since HTML last opened, whilst also executing the main code (i.e., emotions).
@@ -796,8 +796,6 @@ $( document ).ready(function(event) {
   timePassed = ((currentDate-previousDate) / (1000 * 60 * 60)).toFixed(1);
   // timePassed = 10;
 
-  resetCookies();
-
   if (readCookie("petName") == null) { openIntroduction(); }
   else { petName = readCookie("petName"); }
   if (readCookie("playPoints") == null) { playValues = 30; }
@@ -836,10 +834,12 @@ function refreshReactions() {
 
 window.addEventListener('beforeunload', function (event) {
   var currentDate = new Date().getTime();
-  createCookie("lastSeen", currentDate, 365);
-  createCookie("exitHunger", scorePercent, 365);
-  createCookie("playPoints", playValues, 365);
-  createCookie("gold", gold, 365);
+  if (tryAgain = false) {
+    createCookie("lastSeen", currentDate, 365);
+    createCookie("exitHunger", scorePercent, 365);
+    createCookie("playPoints", playValues, 365);
+    createCookie("gold", gold, 365);
+  }
 });
 
 function convertLinkToId(url) {
@@ -862,7 +862,7 @@ function openYoutube() {
       }
       else { alertify.error('Not a valid YouTube link.'); }
     }
-    , function() { alertify.error('YouTube cancelled.'); } );
+    , function() { alertify.error('YouTube cancelled.'); } ).set('type', 'text');
 }
 // Alertify plugin to watch youtube videos. Credits to Mohammad Younes.
 
